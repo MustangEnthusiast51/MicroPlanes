@@ -36,6 +36,10 @@ public:
 		FVector ControlFactors;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float tipChordOffset;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float liftFactor;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float dragFactor;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector localForcePos;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -44,7 +48,6 @@ public:
 		float alphaDeg;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector totalForces;
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

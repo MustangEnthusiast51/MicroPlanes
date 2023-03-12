@@ -20,6 +20,8 @@ ULiftingLineAirfoil::ULiftingLineAirfoil()
 	zeroLiftDegHigh = 60.f;
 	maxFlapAngle = 30.f;
 	temporalBlend = 0.5f;
+	liftFactor = 1.f;
+	dragFactor = 1.f;
 	zeroLiftDegLow = -1.f;
 	// ...
 }
@@ -33,9 +35,9 @@ FVector ULiftingLineAirfoil::Coefficients(float alpha) {
 	
 	if (UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass())) {
 		
-		alphaOffset += ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 0)*maxFlapAngle*deg2rad;
-		alphaOffset += ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 1)*maxFlapAngle*deg2rad;
-		alphaOffset += ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 2)*maxFlapAngle*deg2rad;
+		alphaOffset += ControlFactors.X *ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 0)*maxFlapAngle*deg2rad;
+		alphaOffset += ControlFactors.Y *ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 1)*maxFlapAngle*deg2rad;
+		alphaOffset += ControlFactors.Z *ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 2)*maxFlapAngle*deg2rad;
 	}
 	
 	float correctedAlpha = alpha +alphaOffset;
@@ -100,8 +102,8 @@ FVector ULiftingLineAirfoil::NetForces() {
 	FVector coefficients = Coefficients(alpha);
 	FVector worldDir = worldVel;
 	worldDir.Normalize();
-	float lift = LiftEquation(envData.airDensity,coefficients.X,worldVel.Length());
-	float drag = LiftEquation(envData.airDensity,coefficients.Y,worldVel.Length());
+	float lift = LiftEquation(envData.airDensity,coefficients.X,worldVel.Length())*liftFactor;
+	float drag = LiftEquation(envData.airDensity,coefficients.Y,worldVel.Length())*dragFactor;
 	FVector liftDir = FVector::CrossProduct(worldDir, this->GetRightVector());
 	//DrawDebugLine(GetWorld(), transform.GetLocation(), transform.GetLocation() + liftDir*lift, FColor::Emerald, true, .01f, 0, 2.f);
 //	DrawDebugLine(GetWorld(), transform.GetLocation(), transform.GetLocation() -drag*worldDir, FColor::Emerald, true, .01f, 0, 2.f);
