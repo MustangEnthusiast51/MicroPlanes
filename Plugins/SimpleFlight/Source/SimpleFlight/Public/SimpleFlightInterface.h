@@ -59,5 +59,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		float GetInputChannel(int channel);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void SetInputChannel(int channel, float value);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void SetCameraDirectionValues(FVector directionalValues);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		FEnvironmentData GetEnvironmentData();
 };
