@@ -48,6 +48,7 @@ public:
 		float alphaDeg;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector totalForces;
+	bool implementsInterface;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

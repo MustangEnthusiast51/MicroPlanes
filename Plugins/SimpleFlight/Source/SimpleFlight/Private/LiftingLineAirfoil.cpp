@@ -66,7 +66,7 @@ float ULiftingLineAirfoil::LiftEquation(float airDensity, float cl, float veloci
 void ULiftingLineAirfoil::BeginPlay()
 {
 	Super::BeginPlay();
-
+	implementsInterface = UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass());
 	// ...
 	
 }
@@ -91,7 +91,7 @@ FVector ULiftingLineAirfoil::NetForces() {
 	FVector worldVel = FVector();
 	FTransform transform = this->GetComponentTransform();
 	FEnvironmentData envData = FEnvironmentData();
-	if (UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass())) {
+	if (implementsInterface) {
 		worldVel = ISimpleFlightInterface::Execute_VelocityAtPoint(this->GetOwner(),transform.TransformPosition(localForcePos));
 		envData = ISimpleFlightInterface::Execute_GetEnvironmentData(this->GetOwner());
 		
