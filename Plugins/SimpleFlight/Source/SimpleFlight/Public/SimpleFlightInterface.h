@@ -64,4 +64,5 @@ public:
 		void SetCameraDirectionValues(FVector directionalValues);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		FEnvironmentData GetEnvironmentData();
+
 };

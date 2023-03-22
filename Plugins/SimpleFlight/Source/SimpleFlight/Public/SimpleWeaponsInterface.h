@@ -25,5 +25,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void TakeHitDamage(FVector pos, float damage);
-
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void FireWeapons(bool triggered);
 };

@@ -2,8 +2,10 @@
 
 
 #include "SimpleFlightGun.h"
-#include "DrawDebugHelpers.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 // Sets default values for this component's properties
 USimpleFlightGun::USimpleFlightGun()
 {
@@ -15,8 +17,13 @@ USimpleFlightGun::USimpleFlightGun()
 	muzzleVelocity = 84000.f;
 	fire = false;
 	range = 183000.f;
+	//bulletRenderer = CreateDefaultSubobject<ULineBatchComponent>(TEXT("Bullet Tracer Renderer"));
+	roundsBwTracer = 5;
 	damage = 5.f;
+	tracerColor = FColor::Orange;
+	tracerIntensity = 10;
 	fired = true;
+	seed = 0.f;
 	// ...
 }
 
@@ -26,15 +33,29 @@ void USimpleFlightGun::BeginPlay()
 {
 	Super::BeginPlay();
 	this->SetComponentTickInterval(1.f/20.f);
+	if (WeaponsTracers) {
+
+		niagaraTracers = UNiagaraFunctionLibrary::SpawnSystemAttached(WeaponsTracers, this, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
+	}
 	// ...
-	
+	seed = FMath::RandRange(0.f, 1.f/roundsPerSecond);
+	timer = seed;
 
 }
+
+
+void USimpleFlightGun::FireWeapons_Implementation(bool triggered) {
+	fire = triggered;
+}
+
 
 
 void USimpleFlightGun::OnHit(FVector pos, FBullet bullet, FHitResult hit) {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s = StringVariable"), "hit"));
 	//	DrawDebugSphere(GetWorld(), hit.Location, 100.f, 12, FColor::Emerald, false, 1.f / 20.f, 0, 2.f);
+	if (HitParticle) {
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitParticle, hit.Location, FRotator(0.f), FVector(1.f), true, true);
+	}
 	if (UKismetSystemLibrary::DoesImplementInterface(hit.GetActor(), USimpleWeaponsInterface::StaticClass())) {
 		ISimpleWeaponsInterface::Execute_TakeHitDamage(hit.GetActor(), pos, damage);
 	}
@@ -47,11 +68,16 @@ void USimpleFlightGun::SpawnBullet() {
 	FVector interpDir = FMath::Lerp(prevDir, this->GetForwardVector(), lerpFac);
 	FBullet newBullet = FBullet();
 	newBullet.direction = interpDir;
-	newBullet.pos = interpPos;
 	newBullet.speed = muzzleVelocity;
+	newBullet.pos = interpPos+interpDir* 223.f*FMath::RandRange(0.f,1.f);
 	newBullet.startPos = interpPos;
 
+	if (bullets.Num()+1% roundsBwTracer==0) {
+		newBullet.tracer = true;
+	}
 	bullets.Add(newBullet);
+	bulletPositions.Add(newBullet.pos);
+	bulletVelocities.Add(newBullet.direction);
 	ammoCount -= 1;
 	fired = true;
 }
@@ -61,15 +87,17 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	int roundsPerFrame = FMath::RoundToInt(roundsPerSecond * DeltaTime);
-	if (!fire || ammoCount <= 0) {
-		return;
+	if (fire&&ammoCount>0) {
+
+
+		timer += DeltaTime;
+		if (timer >= 1.f / roundsPerSecond) {
+			SpawnBullet();
+			timer = 0.f;
+			fired = false;
+		}
 	}
-	timer += DeltaTime;
-	if (timer>=1.f/roundsPerSecond) {
-		SpawnBullet();
-		timer = 0.f;
-		fired = false;
-	}
+	niagaraTracers->Deactivate();
 	/*
 	if (fired) {
 		FTimerHandle timerHandle;
@@ -100,8 +128,15 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 
 		FVector newPos = bullets[o].pos + bullets[o].direction * bullets[o].speed*DeltaTime;
+		bulletPositions[o] = newPos;
+		if (true) {
+		//	bulletRenderer->DrawLine(bullets[o].pos,newPos,FColor(tracerColor.R*tracerIntensity, tracerColor.G * tracerIntensity, tracerColor.B * tracerIntensity), 0, damage / 2.f, 1.f / 20.f);
+		}
+
 		if (FVector::Distance(newPos, bullets[o].startPos) >= range) {
 			bullets.RemoveAt(o);
+			bulletPositions.RemoveAt(o);
+			bulletVelocities.RemoveAt(o);
 		}
 		else {
 			//DrawDebugLine(GetWorld(), bullets[o].pos, newPos, FColor::Red, true, DeltaTime, 0, 10.f);
@@ -112,6 +147,8 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				
 				OnHit(hit.Location,bullets[o],hit);
 				bullets.RemoveAt(o);
+				bulletPositions.RemoveAt(o);
+				bulletVelocities.RemoveAt(o);
 
 			}
 			else {
@@ -120,7 +157,11 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 		
 	}
+	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(niagaraTracers, FName("Positions"), bulletPositions);
+	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(niagaraTracers, FName("Velocities"), bulletVelocities);
+	niagaraTracers->SetNiagaraVariableInt(FString("SpawnAmount"), bullets.Num());
 
+	niagaraTracers->Activate();
 
 	// ...
 }
