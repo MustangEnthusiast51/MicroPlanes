@@ -22,6 +22,7 @@ ULiftingLineAirfoil::ULiftingLineAirfoil()
 	temporalBlend = 0.5f;
 	liftFactor = 1.f;
 	dragFactor = 1.f;
+	forcesFactor = 1.f;
 	zeroLiftDegLow = -1.f;
 	// ...
 }
@@ -124,7 +125,7 @@ void ULiftingLineAirfoil::TickComponent(float DeltaTime, ELevelTick TickType, FA
 FSFForce ULiftingLineAirfoil::ReportSimpleForce_Implementation() {
 	FSFForce force = FSFForce();
 	force.torque = FVector();
-	force.force = NetForces();
+	force.force = NetForces()*forcesFactor;
 	force.worldPos = this->GetComponentTransform().TransformPosition(localForcePos);
 	return force;
 }

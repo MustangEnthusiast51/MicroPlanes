@@ -40,6 +40,8 @@ public:
 		float liftFactor;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float dragFactor;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float forcesFactor;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector localForcePos;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)

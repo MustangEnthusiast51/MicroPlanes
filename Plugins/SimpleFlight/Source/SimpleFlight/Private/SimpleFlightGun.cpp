@@ -56,8 +56,9 @@ void USimpleFlightGun::OnHit(FVector pos, FBullet bullet, FHitResult hit) {
 	if (HitParticle) {
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitParticle, hit.Location, FRotator(0.f), FVector(1.f), true, true);
 	}
+	
 	if (UKismetSystemLibrary::DoesImplementInterface(hit.GetActor(), USimpleWeaponsInterface::StaticClass())) {
-		ISimpleWeaponsInterface::Execute_TakeHitDamage(hit.GetActor(), pos, damage);
+		ISimpleWeaponsInterface::Execute_TakeHitDamage(hit.GetActor(), pos, damage, hit);
 	}
 }
 
@@ -97,7 +98,11 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			fired = false;
 		}
 	}
+
+	if (niagaraTracers) {
+
 	niagaraTracers->Deactivate();
+	}
 	/*
 	if (fired) {
 		FTimerHandle timerHandle;
@@ -157,12 +162,13 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 		
 	}
-	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(niagaraTracers, FName("Positions"), bulletPositions);
-	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(niagaraTracers, FName("Velocities"), bulletVelocities);
-	niagaraTracers->SetNiagaraVariableInt(FString("SpawnAmount"), bullets.Num());
+	if (niagaraTracers) {
+		UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(niagaraTracers, FName("Positions"), bulletPositions);
+		UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(niagaraTracers, FName("Velocities"), bulletVelocities);
+		niagaraTracers->SetNiagaraVariableInt(FString("SpawnAmount"), bullets.Num());
 
-	niagaraTracers->Activate();
-
+		niagaraTracers->Activate();
+	}
 	// ...
 }
 

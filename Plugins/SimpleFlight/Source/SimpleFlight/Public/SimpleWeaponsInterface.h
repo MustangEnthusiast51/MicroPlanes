@@ -24,7 +24,7 @@ class SIMPLEFLIGHT_API ISimpleWeaponsInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		void TakeHitDamage(FVector pos, float damage);
+		void TakeHitDamage(FVector pos, float damage, FHitResult hit);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void FireWeapons(bool triggered);
 };
