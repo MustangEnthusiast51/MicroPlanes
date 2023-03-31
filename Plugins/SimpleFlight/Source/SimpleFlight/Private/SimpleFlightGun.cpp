@@ -58,7 +58,7 @@ void USimpleFlightGun::BeginPlay()
 
 void USimpleFlightGun::FireWeapons_Implementation(bool triggered, bool& isFiring, EWeaponType weapon) {
 
-	if (weapon==weaponType) {
+	if (weapon==weaponType&&triggered) {
 
 	fire = triggered;
 	if (ammoCount > 0) {
