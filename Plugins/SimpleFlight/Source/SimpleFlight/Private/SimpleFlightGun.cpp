@@ -6,6 +6,7 @@
 #include "NiagaraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
+#include "Components/AudioComponent.h"
 // Sets default values for this component's properties
 USimpleFlightGun::USimpleFlightGun()
 {
@@ -24,6 +25,10 @@ USimpleFlightGun::USimpleFlightGun()
 	tracerIntensity = 10;
 	fired = true;
 	seed = 0.f;
+	playing = false;
+//	gunSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Gun Audio"));
+//	gunSoundComponent->AdjustAttenuation(attenuationSettings); 
+	
 	// ...
 }
 
@@ -36,16 +41,36 @@ void USimpleFlightGun::BeginPlay()
 	if (WeaponsTracers) {
 
 		niagaraTracers = UNiagaraFunctionLibrary::SpawnSystemAttached(WeaponsTracers, this, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
+	
+	}
+	if (muzzleFlash) {
+		muzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(muzzleFlash, this, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, false, false);
 	}
 	// ...
 	seed = FMath::RandRange(0.f, 1.f/roundsPerSecond);
 	timer = seed;
+	
+	gunSoundComponent = Cast < UAudioComponent>(this->GetChildComponent(1));
+	//gunSoundComponent->SetSound(gunSound);
 
 }
 
 
-void USimpleFlightGun::FireWeapons_Implementation(bool triggered) {
+void USimpleFlightGun::FireWeapons_Implementation(bool triggered, bool& isFiring, EWeaponType weapon) {
+
+	if (weapon==weaponType) {
+
 	fire = triggered;
+	if (ammoCount > 0) {
+		isFiring = true;
+		
+	}
+
+	}
+	else {
+		isFiring = false;
+		fire = false;
+	}
 }
 
 
@@ -96,6 +121,28 @@ void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			SpawnBullet();
 			timer = 0.f;
 			fired = false;
+		}
+		if (muzzleFlashComponent) {
+			muzzleFlashComponent->Activate();
+		}
+		if (!playing&&gunSoundComponent) {
+			playing = true;
+			gunSoundComponent->Activate();
+			gunSoundComponent->SetVolumeMultiplier(1.f);
+		gunSoundComponent->Play(FMath::RandRange(0.f,gunSound->GetDuration()));
+
+		}
+	}
+	else {
+		if (muzzleFlashComponent) {
+
+		muzzleFlashComponent->Deactivate();
+		}
+		playing = false;
+		if (gunSoundComponent) {
+			gunSoundComponent->SetVolumeMultiplier(0.f);
+		gunSoundComponent->Stop();
+		gunSoundComponent->Deactivate();
 		}
 	}
 

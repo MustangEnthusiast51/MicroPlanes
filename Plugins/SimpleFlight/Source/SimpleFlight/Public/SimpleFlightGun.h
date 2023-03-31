@@ -57,21 +57,31 @@ public:
 		UNiagaraSystem* WeaponsTracers;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		UNiagaraSystem* HitParticle;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		UNiagaraSystem* muzzleFlash;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		USoundBase* gunSound;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TEnumAsByte<EWeaponType> weaponType;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector prevPos;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector prevDir;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float seed;
-
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UAudioComponent* gunSoundComponent;
 
 	ULineBatchComponent* bulletRenderer;
 	UNiagaraComponent* niagaraTracers;
+	UNiagaraComponent* muzzleFlashComponent;
 	TArray<FVector> bulletPositions;
 	TArray<FBullet> bullets;
 	TArray<FVector> bulletVelocities;
 
+
 	bool fired;
+	bool playing;
 	float timer;
 protected:
 	// Called when the game starts
@@ -83,5 +93,5 @@ public:
 
 	void SpawnBullet();
 	void OnHit(FVector pos, FBullet bullet, FHitResult hit);
-	virtual void FireWeapons_Implementation(bool triggered);
+	virtual void FireWeapons_Implementation(bool triggered, bool& isFiring, EWeaponType weapon);
 };

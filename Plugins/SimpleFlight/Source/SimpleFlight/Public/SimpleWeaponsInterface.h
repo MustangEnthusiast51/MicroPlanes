@@ -6,6 +6,14 @@
 #include "UObject/Interface.h"
 #include "SimpleWeaponsInterface.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EWeaponType : uint8 {
+	MachineGun UMETA(DisplayName = "Machine Gun 1"),
+	Cannon UMETA(DisplayName = "Cannon"),
+	Bomb UMETA(DisplayName = "Simple Bomb")
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class USimpleWeaponsInterface : public UInterface
@@ -26,5 +34,5 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void TakeHitDamage(FVector pos, float damage, FHitResult hit);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		void FireWeapons(bool triggered);
+		void FireWeapons(bool triggered, bool& isFiring, EWeaponType weapon);
 };
