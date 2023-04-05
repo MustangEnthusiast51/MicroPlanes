@@ -68,6 +68,9 @@ void ULiftingLineAirfoil::BeginPlay()
 {
 	Super::BeginPlay();
 	implementsInterface = UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass());
+	
+	relTransform = GetComponentTransform() * GetOwner()->GetRootComponent()->GetComponentTransform().Inverse();
+	
 	// ...
 	
 }
@@ -88,9 +91,9 @@ void ULiftingLineAirfoil::DrawDebug() {
 
 }
 
-FVector ULiftingLineAirfoil::NetForces() {
+FVector ULiftingLineAirfoil::NetForces(FTransform transform) {
 	FVector worldVel = FVector();
-	FTransform transform = this->GetComponentTransform();
+	//FTransform transform = this->GetComponentTransform();
 	FEnvironmentData envData = FEnvironmentData();
 	if (implementsInterface) {
 		worldVel = ISimpleFlightInterface::Execute_VelocityAtPoint(this->GetOwner(),transform.TransformPosition(localForcePos));
@@ -105,7 +108,7 @@ FVector ULiftingLineAirfoil::NetForces() {
 	worldDir.Normalize();
 	float lift = LiftEquation(envData.airDensity,coefficients.X,worldVel.Length())*liftFactor;
 	float drag = LiftEquation(envData.airDensity,coefficients.Y,worldVel.Length())*dragFactor;
-	FVector liftDir = FVector::CrossProduct(worldDir, this->GetRightVector());
+	FVector liftDir = FVector::CrossProduct(worldDir, transform.TransformVector(FVector(0.f,1.f,0.f)));
 	//DrawDebugLine(GetWorld(), transform.GetLocation(), transform.GetLocation() + liftDir*lift, FColor::Emerald, true, .01f, 0, 2.f);
 //	DrawDebugLine(GetWorld(), transform.GetLocation(), transform.GetLocation() -drag*worldDir, FColor::Emerald, true, .01f, 0, 2.f);
 
@@ -122,11 +125,22 @@ void ULiftingLineAirfoil::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
-FSFForce ULiftingLineAirfoil::ReportSimpleForce_Implementation() {
+FSFForce ULiftingLineAirfoil::ReportSimpleForce_Implementation(FTransform overrideTransform, bool substep) {
+	FTransform myTransform = this->GetComponentTransform();
+	if (substep) {
+		myTransform = relTransform * overrideTransform;
+
+	}
 	FSFForce force = FSFForce();
 	force.torque = FVector();
-	force.force = NetForces()*forcesFactor;
+	force.force = NetForces(myTransform)*forcesFactor;
+	if (!substep) {
 	force.worldPos = this->GetComponentTransform().TransformPosition(localForcePos);
+
+	}
+	else {
+			force.worldPos = myTransform.TransformPosition(localForcePos);
+	}
 	return force;
 }
 

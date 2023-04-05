@@ -53,7 +53,7 @@ public:
 		void DrawSFDebug();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		FSFForce ReportSimpleForce();
+		FSFForce ReportSimpleForce(FTransform overrideTransform, bool substep);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		FVector VelocityAtPoint(FVector worldPos);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)

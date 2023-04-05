@@ -51,6 +51,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector totalForces;
 	bool implementsInterface;
+
+	FTransform relTransform;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -62,7 +64,7 @@ public:
 		void DrawDebug();
 
 	UFUNCTION(BlueprintCallable)
-		FVector NetForces();
+		FVector NetForces(FTransform myTransform);
 
 	UFUNCTION(BlueprintCallable)
 		FVector Coefficients(float alpha);
@@ -74,5 +76,5 @@ public:
 
 	virtual void DrawSFDebug_Implementation();
 		
-	virtual FSFForce ReportSimpleForce_Implementation();
+	virtual FSFForce ReportSimpleForce_Implementation(FTransform overrideTransform,bool substep);
 };
