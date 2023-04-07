@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float sideGrip;
 
+
+
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TEnumAsByte<ECollisionChannel> channel;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -45,11 +48,14 @@ protected:
 		float lastLength;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		float zeroToOneLength;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		float rpm;
 
 	bool implementsInterface;
 
 	FTransform relTransform;
 	FTransform parentTransform;
+	UPrimitiveComponent* rootComp;
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -45,8 +45,7 @@ void USimpleWheel::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-	relTransform = GetComponentTransform()*GetOwner()->GetRootComponent()->GetComponentTransform().Inverse() ;
+	rootComp = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 	implementsInterface = UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass());
 	// ...
 	
@@ -62,6 +61,7 @@ void USimpleWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 }
 
 FSFForce USimpleWheel::CalculateForces(FTransform transform) {
+	relTransform = GetComponentTransform()*GetOwner()->GetRootComponent()->GetComponentTransform().Inverse() ;
 
 	FVector start = transform.GetLocation();
 	FVector end = transform.TransformPosition(-FVector(0.f,0.f,springLength+wheelRadius));
@@ -91,16 +91,20 @@ FSFForce USimpleWheel::CalculateForces(FTransform transform) {
 		
 		float gripForce = 0.f;
 		
-		if (implementsInterface) {
+		if (rootComp) {
 			
 			FTransform tempTransform = FTransform();
 			tempTransform.SetLocation(transform.GetLocation());
 			FVector tempForward = FVector::CrossProduct(hit.Normal, transform.TransformVector(FVector(0.f, 1.f, 0.f)));
 			tempTransform.SetRotation(tempForward.Rotation().Quaternion());
-
-			FVector velocity = ISimpleFlightInterface::Execute_VelocityAtPoint(GetOwner(), hit.Location);
+			//not using the interface velocity because it can be affected by wind in the future.
+			FVector velocity = rootComp->GetPhysicsLinearVelocityAtPoint(hit.Location)*0.001f;
+			//FVector velocity = ISimpleFlightInterface::Execute_VelocityAtPoint(GetOwner(), hit.Location);
 			
 			velocity = tempTransform.InverseTransformVector(velocity);
+
+			float circumference = 2.f * PI * wheelRadius;
+			rpm = (velocity.X*1000.f / circumference) * 60.f;
 			gripForce = velocity.Y * -sideGrip;
 		netDampingForce = -dampingForce*velocity.Z;
 		}

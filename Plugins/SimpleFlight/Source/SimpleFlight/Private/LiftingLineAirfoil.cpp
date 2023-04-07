@@ -69,7 +69,6 @@ void ULiftingLineAirfoil::BeginPlay()
 	Super::BeginPlay();
 	implementsInterface = UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass());
 	
-	relTransform = GetComponentTransform() * GetOwner()->GetRootComponent()->GetComponentTransform().Inverse();
 	
 	// ...
 	
@@ -126,6 +125,7 @@ void ULiftingLineAirfoil::TickComponent(float DeltaTime, ELevelTick TickType, FA
 }
 
 FSFForce ULiftingLineAirfoil::ReportSimpleForce_Implementation(FTransform overrideTransform, bool substep) {
+	relTransform = GetComponentTransform() * GetOwner()->GetRootComponent()->GetComponentTransform().Inverse();
 	FTransform myTransform = this->GetComponentTransform();
 	if (substep) {
 		myTransform = relTransform * overrideTransform;
