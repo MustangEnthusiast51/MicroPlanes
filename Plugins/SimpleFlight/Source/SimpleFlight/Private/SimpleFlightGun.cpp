@@ -58,19 +58,24 @@ void USimpleFlightGun::BeginPlay()
 
 void USimpleFlightGun::FireWeapons_Implementation(bool triggered, bool& isFiring, EWeaponType weapon) {
 
-	if (weapon==weaponType&&triggered) {
 
-	fire = triggered;
+	if (weapon == weaponType) {
+		fire = triggered;
+	}
+	if (triggered && weapon==weaponType) {
+
 	if (ammoCount > 0) {
 		isFiring = true;
+//	fire = true;
 		
 	}
 
-	}
-	else {
+	}else {
 		isFiring = false;
-		fire = false;
+		//fire = false;
 	}
+
+
 }
 
 
@@ -106,12 +111,14 @@ void USimpleFlightGun::SpawnBullet() {
 	bulletVelocities.Add(newBullet.direction);
 	ammoCount -= 1;
 	fired = true;
+	//fire = false;
 }
 
 // Called every frame
 void USimpleFlightGun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
 	int roundsPerFrame = FMath::RoundToInt(roundsPerSecond * DeltaTime);
 	if (fire&&ammoCount>0) {
 
