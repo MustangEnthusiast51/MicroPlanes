@@ -37,4 +37,6 @@ public:
 		void FireWeapons(bool triggered, bool& isFiring, EWeaponType weapon);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void ApplyHitDamageToActor(const TArray<AActor*>& actors, float damage, FHitResult hit, FVector pos);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		EWeaponType GetWeaponType();
 };

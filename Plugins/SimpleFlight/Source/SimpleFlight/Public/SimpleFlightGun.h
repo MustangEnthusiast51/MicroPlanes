@@ -94,4 +94,5 @@ public:
 	void SpawnBullet();
 	void OnHit(FVector pos, FBullet bullet, FHitResult hit);
 	virtual void FireWeapons_Implementation(bool triggered, bool& isFiring, EWeaponType weapon);
+	virtual EWeaponType GetWeaponType_Implementation();
 };

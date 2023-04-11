@@ -56,6 +56,18 @@ void USimpleFlightGun::BeginPlay()
 }
 
 
+
+
+EWeaponType USimpleFlightGun::GetWeaponType_Implementation() {
+
+	return weaponType;
+}
+
+
+
+
+
+
 void USimpleFlightGun::FireWeapons_Implementation(bool triggered, bool& isFiring, EWeaponType weapon) {
 
 
