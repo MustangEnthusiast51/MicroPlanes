@@ -87,8 +87,11 @@ void USimpleFlightGun::OnHit(FVector pos, FBullet bullet, FHitResult hit) {
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitParticle, hit.Location, FRotator(0.f), FVector(1.f), true, true);
 	}
 	
-	if (UKismetSystemLibrary::DoesImplementInterface(hit.GetActor(), USimpleWeaponsInterface::StaticClass())) {
-		ISimpleWeaponsInterface::Execute_TakeHitDamage(hit.GetActor(), pos, damage, hit);
+	if (UKismetSystemLibrary::DoesImplementInterface(GetOwner(), USimpleWeaponsInterface::StaticClass())) {
+		TArray<AActor*> actors;
+		actors.Add(hit.GetActor());
+		ISimpleWeaponsInterface::Execute_ApplyHitDamageToActor(GetOwner(), actors, damage, hit, pos);
+		//ISimpleWeaponsInterface::Execute_TakeHitDamage(hit.GetActor(), pos, damage, hit);
 	}
 }
 
