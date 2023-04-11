@@ -24,6 +24,7 @@ ULiftingLineAirfoil::ULiftingLineAirfoil()
 	dragFactor = 1.f;
 	forcesFactor = 1.f;
 	zeroLiftDegLow = -1.f;
+	additionalInputChannel = -1;
 	// ...
 }
 
@@ -39,6 +40,10 @@ FVector ULiftingLineAirfoil::Coefficients(float alpha) {
 		alphaOffset += ControlFactors.X *ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 0)*maxFlapAngle*deg2rad;
 		alphaOffset += ControlFactors.Y *ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 1)*maxFlapAngle*deg2rad;
 		alphaOffset += ControlFactors.Z *ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), 2)*maxFlapAngle*deg2rad;
+	
+		if (additionalInputChannel >= 0) {
+			alphaOffset += maxFlapAngle * ISimpleFlightInterface::Execute_GetInputChannel(this->GetOwner(), additionalInputChannel);
+		}
 	}
 	
 	float correctedAlpha = alpha +alphaOffset;

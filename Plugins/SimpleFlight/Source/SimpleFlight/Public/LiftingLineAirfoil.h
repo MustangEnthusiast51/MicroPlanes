@@ -42,6 +42,10 @@ public:
 		float dragFactor;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float forcesFactor;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int additionalInputChannel;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector localForcePos;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -51,6 +55,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		FVector totalForces;
 	bool implementsInterface;
+
+
+
+
 
 	FTransform relTransform;
 protected:
