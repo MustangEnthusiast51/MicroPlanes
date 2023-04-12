@@ -39,4 +39,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void TakeEngineDamage(float damage, float health);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void StartEngine(bool running);
 };
