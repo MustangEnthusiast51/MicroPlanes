@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "GameFramework/OnlineReplStructs.h"
 #include "SimpleWeaponsInterface.generated.h"
 
 
@@ -32,7 +33,7 @@ class SIMPLEFLIGHT_API ISimpleWeaponsInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		void TakeHitDamage(AActor* offendingActor,FVector pos, float damage, FHitResult hit);
+		void TakeHitDamage(FUniqueNetIdRepl attackerID,FVector pos, float damage, FHitResult hit);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void FireWeapons(bool triggered, bool& isFiring, EWeaponType weapon);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
