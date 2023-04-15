@@ -34,7 +34,7 @@ void USimpleFlightSubstepComponent::BeginPlay()
 	CalculateCustomPhysics.BindUObject(this, &USimpleFlightSubstepComponent::SubstepTick);
 	simpleFlightComponents = GetOwner()->GetComponentsByInterface(USimpleFlightInterface::StaticClass());
 	// ...
-	
+	PrimitiveParent = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 	
 }
 
@@ -46,11 +46,20 @@ void USimpleFlightSubstepComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 
 	if (enableSubstepCalculations) {
-		if (UPrimitiveComponent* PrimitiveParent = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent())) {
+		if (PrimitiveParent) {
 			if (PrimitiveParent->IsSimulatingPhysics()) {
 				if (FBodyInstance* bodyInstance = PrimitiveParent->GetBodyInstance()) {
 					bodyInstance->AddCustomPhysics(CalculateCustomPhysics);
 				}
+			}
+		}
+	}
+	else {
+		if (PrimitiveParent) {
+			TArray<FSFForce> forces = GatherForces(PrimitiveParent->GetComponentTransform());
+			for (int i = 0; i < forces.Num(); i++) {
+				PrimitiveParent->AddForceAtLocation(forces[i].force, forces[i].worldPos);
+				PrimitiveParent->AddTorqueInRadians(forces[i].torque);
 			}
 		}
 	}

@@ -25,6 +25,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool enableSubstepCalculations;
 
+	UPrimitiveComponent* PrimitiveParent;
+
 	virtual void BeginPlay() override;
 
 public:	
