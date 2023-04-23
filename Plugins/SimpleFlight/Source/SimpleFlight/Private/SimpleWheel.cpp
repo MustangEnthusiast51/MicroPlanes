@@ -16,6 +16,7 @@ USimpleWheel::USimpleWheel()
 	springForce = 4000.f;
 	dampingForce = 2000.f;
 	physicsTimestep = 1.f / 60.f;
+	forcesFactor = 1.f;
 	// ...
 }
 
@@ -59,6 +60,13 @@ void USimpleWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	// ...
 }
+
+void USimpleWheel::AffectPerformance_Implementation(float health, float damage) {
+	forcesFactor = health;
+}
+
+
+
 
 FSFForce USimpleWheel::CalculateForces(FTransform transform) {
 	relTransform = GetComponentTransform()*GetOwner()->GetRootComponent()->GetComponentTransform().Inverse() ;
@@ -119,6 +127,7 @@ FSFForce USimpleWheel::CalculateForces(FTransform transform) {
 		force.worldPos = hit.Location;
 
 		force.force = transform.TransformVector(FVector(0.f,gripForce,0.f))+hit.Normal*netSpringForce;
+		force.force *= forcesFactor;
 
 	}
 	return force;

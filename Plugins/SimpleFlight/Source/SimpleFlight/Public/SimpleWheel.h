@@ -52,7 +52,7 @@ protected:
 		float rpm;
 
 	bool implementsInterface;
-
+	float forcesFactor;
 	FTransform relTransform;
 	FTransform parentTransform;
 	UPrimitiveComponent* rootComp;
@@ -63,4 +63,5 @@ public:
 	FSFForce CalculateForces(FTransform transform);
 	virtual void DrawSFDebug_Implementation();
 	virtual FSFForce ReportSimpleForce_Implementation(FTransform overrideTransform, bool substep);
+	virtual void AffectPerformance_Implementation(float health, float damage);
 };

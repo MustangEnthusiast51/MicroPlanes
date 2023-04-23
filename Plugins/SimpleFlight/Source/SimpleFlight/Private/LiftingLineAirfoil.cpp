@@ -25,13 +25,19 @@ ULiftingLineAirfoil::ULiftingLineAirfoil()
 	forcesFactor = 1.f;
 	zeroLiftDegLow = -1.f;
 	additionalInputChannel = -1;
+	calculationsInMeters = false;
 	// ...
 }
 
 //alpha in radians
 FVector ULiftingLineAirfoil::Coefficients(float alpha) {
+
 	wingArea = FMath::Abs(wingSpan * (rootChord + tipChord) * 0.5f);
 	float ar = wingSpan * wingSpan / wingArea;
+	if (calculationsInMeters) {
+		wingArea = FMath::Abs(wingSpan * 0.01f * (rootChord * 0.01f + tipChord * 0.01f) * 0.5f);
+		ar = (wingSpan * 0.01f * wingSpan * 0.01f) / (wingArea);
+	}
 	const float deg2rad = PI / 180.f;
 	float alphaOffset = -zeroLiftDegLow*deg2rad;
 	
@@ -63,6 +69,7 @@ FVector ULiftingLineAirfoil::Coefficients(float alpha) {
 
 float ULiftingLineAirfoil::LiftEquation(float airDensity, float cl, float velocity) {
 
+	
 
 	return cl * velocity * velocity * airDensity * wingArea * 0.5f;
 
@@ -100,10 +107,15 @@ FVector ULiftingLineAirfoil::NetForces(FTransform transform) {
 	//FTransform transform = this->GetComponentTransform();
 	FEnvironmentData envData = FEnvironmentData();
 	if (implementsInterface) {
-		worldVel = ISimpleFlightInterface::Execute_VelocityAtPoint(this->GetOwner(),transform.TransformPosition(localForcePos));
+		worldVel = ISimpleFlightInterface::Execute_VelocityAtPoint(this->GetOwner(), transform.TransformPosition(localForcePos));
 		envData = ISimpleFlightInterface::Execute_GetEnvironmentData(this->GetOwner());
-		
+
 	}
+
+	if (calculationsInMeters) {
+		worldVel *= 0.01f;
+	}
+
 	FVector localVel = transform.InverseTransformVector(worldVel);
 	float alpha = FMath::Atan2(-localVel.Z, localVel.X);
 	alphaDeg = alpha * 180.f / PI;
@@ -139,6 +151,9 @@ FSFForce ULiftingLineAirfoil::ReportSimpleForce_Implementation(FTransform overri
 	FSFForce force = FSFForce();
 	force.torque = FVector();
 	force.force = NetForces(myTransform)*forcesFactor;
+	if (calculationsInMeters) {
+		force.force *= 100.f;
+	}
 	if (!substep) {
 	force.worldPos = this->GetComponentTransform().TransformPosition(localForcePos);
 
@@ -155,3 +170,8 @@ void ULiftingLineAirfoil::DrawSFDebug_Implementation() {
 }
 
 
+
+
+void ULiftingLineAirfoil::AffectPerformance_Implementation(float health, float damage) {
+	forcesFactor = health;
+}

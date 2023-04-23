@@ -42,7 +42,8 @@ public:
 		float dragFactor;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float forcesFactor;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		bool calculationsInMeters;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		int additionalInputChannel;
 
@@ -85,4 +86,6 @@ public:
 	virtual void DrawSFDebug_Implementation();
 		
 	virtual FSFForce ReportSimpleForce_Implementation(FTransform overrideTransform,bool substep);
+
+	virtual void AffectPerformance_Implementation(float health, float damage);
 };
