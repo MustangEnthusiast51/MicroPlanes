@@ -65,5 +65,5 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		FEnvironmentData GetEnvironmentData();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		void AffectPerformance(float health, float damage);
+		void AffectPerformance(float health, float damage, FVector location);
 };

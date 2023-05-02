@@ -61,7 +61,7 @@ void USimpleWheel::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	// ...
 }
 
-void USimpleWheel::AffectPerformance_Implementation(float health, float damage) {
+void USimpleWheel::AffectPerformance_Implementation(float health, float damage, FVector location) {
 	forcesFactor = health;
 }
 

@@ -63,5 +63,5 @@ public:
 	FSFForce CalculateForces(FTransform transform);
 	virtual void DrawSFDebug_Implementation();
 	virtual FSFForce ReportSimpleForce_Implementation(FTransform overrideTransform, bool substep);
-	virtual void AffectPerformance_Implementation(float health, float damage);
+	virtual void AffectPerformance_Implementation(float health, float damage, FVector location);
 };

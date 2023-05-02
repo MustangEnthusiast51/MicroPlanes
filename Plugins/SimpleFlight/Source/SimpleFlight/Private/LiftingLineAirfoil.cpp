@@ -172,6 +172,6 @@ void ULiftingLineAirfoil::DrawSFDebug_Implementation() {
 
 
 
-void ULiftingLineAirfoil::AffectPerformance_Implementation(float health, float damage) {
+void ULiftingLineAirfoil::AffectPerformance_Implementation(float health, float damage, FVector location) {
 	forcesFactor = health;
 }

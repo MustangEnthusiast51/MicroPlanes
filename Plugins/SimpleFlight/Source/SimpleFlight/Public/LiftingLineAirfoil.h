@@ -87,5 +87,5 @@ public:
 		
 	virtual FSFForce ReportSimpleForce_Implementation(FTransform overrideTransform,bool substep);
 
-	virtual void AffectPerformance_Implementation(float health, float damage);
+	virtual void AffectPerformance_Implementation(float health, float damage, FVector location);
 };
