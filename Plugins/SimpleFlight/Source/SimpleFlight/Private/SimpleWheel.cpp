@@ -17,6 +17,8 @@ USimpleWheel::USimpleWheel()
 	dampingForce = 2000.f;
 	physicsTimestep = 1.f / 60.f;
 	forcesFactor = 1.f;
+	restZeroToOneLength = 0.0f;
+	zeroToOneLength = restZeroToOneLength;
 	// ...
 }
 
@@ -45,7 +47,7 @@ void USimpleWheel::DrawSFDebug_Implementation() {
 void USimpleWheel::BeginPlay()
 {
 	Super::BeginPlay();
-
+	zeroToOneLength = restZeroToOneLength;
 	rootComp = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 	implementsInterface = UKismetSystemLibrary::DoesImplementInterface(this->GetOwner(), USimpleFlightInterface::StaticClass());
 	// ...
@@ -129,6 +131,9 @@ FSFForce USimpleWheel::CalculateForces(FTransform transform) {
 		force.force = transform.TransformVector(FVector(0.f,gripForce,0.f))+hit.Normal*netSpringForce;
 		force.force *= forcesFactor;
 
+	}
+	else {
+		zeroToOneLength = restZeroToOneLength;
 	}
 	return force;
 

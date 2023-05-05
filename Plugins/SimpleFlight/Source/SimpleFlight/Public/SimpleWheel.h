@@ -35,7 +35,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float sideGrip;
 
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float restZeroToOneLength;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
