@@ -59,7 +59,8 @@ FVector ULiftingLineAirfoil::Coefficients(float alpha) {
 	
 	if (correctedAlpha>stallAngleDeg*deg2rad) {
 		float y = stallAngleDeg * deg2rad * PI * 2.f * (ar / (ar + 2.f));
-		float m = -y / (stallAngleDeg * deg2rad - zeroLiftDegHigh * deg2rad);
+		//(zerolift,0)-(stallangle,y)
+		float m = -y / (-stallAngleDeg * deg2rad + zeroLiftDegHigh * deg2rad);
 		cl = m * (correctedAlpha - stallAngleDeg * deg2rad) + y;
 
 	}
